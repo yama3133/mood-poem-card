@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mood Poem Card
 
-## Getting Started
+[English](#english) | [日本語](#japanese)
 
-First, run the development server:
+<a id="english"></a>
+## English
+
+Type a mood or a theme in one phrase. Amazon Bedrock (Nova Pro) writes a short original poem and picks a matching color palette and motif, which the app renders as a generative art card — no stock images, no image-generation model involved.
+
+### Why this shape
+
+Amazon Nova Canvas (Bedrock's text-to-image model) turned out to be inaccessible on this AWS account (marked legacy / access denied), so the "image" half of the creative output is produced procedurally: the LLM returns a color palette and a motif keyword (flower, wave, mountain, star, leaf, moon, rain, cloud), and an SVG renderer draws a unique card from that. Every card is generated fresh from the model's output — same mechanism as a diffusion model producing pixels, just rendering shapes instead.
+
+### Features
+
+- Poem generation in Japanese or English, switchable in the UI
+- Each poem comes with a generated color palette and a motif that visually matches its imagery
+- Download the card as a PNG
+- A few example prompts to try instantly
+
+### Tech stack
+
+- Next.js 16 (App Router) + TypeScript
+- Amazon Bedrock — `amazon.nova-pro-v1:0` via the Converse API, called from a Next.js Route Handler
+- Client-side SVG rendering, exported to PNG with `html-to-image`
+- Deployed on Vercel
+
+### Running locally
 
 ```bash
+npm install
+# .env.local
+# AWS_ACCESS_KEY_ID=...
+# AWS_SECRET_ACCESS_KEY=...
+# AWS_REGION=us-east-1
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The AWS credentials need `bedrock:InvokeModel` on `amazon.nova-pro-v1:0` in `us-east-1`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+<a id="japanese"></a>
+## 日本語
 
-## Learn More
+気分やお題をひとことで入力すると、Amazon Bedrock(Nova Pro)が短い詩を書き、その詩の世界観に合う色パレットとモチーフを選ぶ。アプリはそれをジェネラティブアートのカードとして描画する。ストック画像も画像生成モデルも使っていない。
 
-To learn more about Next.js, take a look at the following resources:
+### この構成にした理由
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Bedrockの画像生成モデルであるAmazon Nova Canvasは、このAWSアカウントではlegacy扱いでアクセスできなかった(access denied)。そのため「画像」側の創造的出力は、LLMが返す色パレットとモチーフキーワード(flower/wave/mountain/star/leaf/moon/rain/cloud)をもとに、SVGで手続き的に描画する方式にした。カードはモデルの出力から毎回生成される点は拡散モデルと同じで、ピクセルの代わりに図形を描いているだけの違い。
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 機能
 
-## Deploy on Vercel
+- 詩の生成は日本語/英語をUIで切り替え可能
+- 詩ごとに色パレットとモチーフを生成し、世界観に合わせる
+- カードをPNGとしてダウンロード
+- すぐ試せるサンプルお題を用意
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 技術スタック
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Next.js 16 (App Router) + TypeScript
+- Amazon Bedrock — `amazon.nova-pro-v1:0` をConverse API経由で、Next.jsのRoute Handlerから呼び出し
+- クライアント側でSVGを描画し、`html-to-image` でPNGに書き出し
+- Vercelにデプロイ
+
+### ローカル実行
+
+```bash
+npm install
+# .env.local
+# AWS_ACCESS_KEY_ID=...
+# AWS_SECRET_ACCESS_KEY=...
+# AWS_REGION=us-east-1
+npm run dev
+```
+
+AWS認証情報には `us-east-1` の `amazon.nova-pro-v1:0` に対する `bedrock:InvokeModel` 権限が必要。
